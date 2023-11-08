@@ -2,6 +2,7 @@ package com.cg.service.customer;
 import com.cg.model.*;
 import com.cg.model.dto.request.TransferReqDTO;
 import com.cg.model.dto.response.CustomerResDTO;
+import com.cg.model.dto.response.HistoryResDTO;
 import com.cg.repository.*;
 import com.cg.service.withdraw.IWithdrawService;
 import lombok.AllArgsConstructor;
@@ -76,6 +77,10 @@ public class CustomerServiceImpl implements ICustomerService {
     }
     @Override
     public void deposit(Deposit deposit) {
+//        if (deposit.getTransactionAmount().compareTo(BigDecimal.valueOf(10000000000L)) < 0) {
+//            throw new DataInputException("Số tiền chuyển khoản tối đa là $1.000.000");
+//        }
+
         depositRepository.save(deposit);
 
         Long customerId = deposit.getCustomer().getId();
@@ -94,27 +99,27 @@ public class CustomerServiceImpl implements ICustomerService {
     }
     @Override
     public void transfer(TransferReqDTO transferReqDTO) {
-        Transfer transfer = new Transfer();
 
+        Long senderId = Long.valueOf(transferReqDTO.getSenderId());
+        Long recipientId = Long.valueOf(transferReqDTO.getRecipientId());
+        String transferAmountStr = transferReqDTO.getTransferAmount();
+        BigDecimal transferAmount = BigDecimal.valueOf(Long.parseLong(transferAmountStr));
+        Long fee = 10L;
 
-        Long senderId = transfer.getSender().getId();
-        Long recipientId = transfer.getRecipient().getId();
+        BigDecimal feeAmount = transferAmount.multiply(BigDecimal.valueOf(fee)).divide(BigDecimal.valueOf(100));
+        BigDecimal transactionAmount = transferAmount.add(feeAmount);
 
-        BigDecimal transferAmount = transfer.getTransferAmount();
-        BigDecimal totalBalance = transfer.getTransferAmount().multiply(transfer.getFee()).divide(BigDecimal.valueOf(100)).add(transfer.getTransferAmount());
-
-        customerRepository.decrementBalance(senderId, totalBalance);
+        customerRepository.decrementBalance(senderId, transactionAmount);
         customerRepository.incrementBalance(recipientId, transferAmount);
 
-        transfer.setSender(transfer.getSender());
-        transfer.setRecipient(transfer.getRecipient());
-        transfer.setTransferAmount(transferAmount);
-        transfer.setFee(BigDecimal.valueOf(10));
+        Optional<Customer> sender = customerRepository.findById(senderId);
+        Optional<Customer> recipient = customerRepository.findById(recipientId);
+
+        Transfer transfer = new Transfer(transferAmount, transactionAmount, BigDecimal.valueOf(fee), sender.get(), recipient.get());
 
         transferRepository.save(transfer);
 
         createHistories(transfer);
-
     }
     public void createHistories(Transfer transfer) {
         History history = new History();
@@ -127,8 +132,8 @@ public class CustomerServiceImpl implements ICustomerService {
         historyRepository.save(history);
     }
     @Override
-    public List<History> findAllHistory() {
-        return historyRepository.findAll();
+    public List<HistoryResDTO> findAllHistory() {
+        return historyRepository.findAllHistoryResDTO();
     }
     @Override
     public List<Customer> findAllWithoutId(Long id) {

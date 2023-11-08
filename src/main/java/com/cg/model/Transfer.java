@@ -30,5 +30,13 @@ public class Transfer {
     @ManyToOne
     private Customer recipient;
 
+
+    public Transfer(BigDecimal transferAmount, BigDecimal total, BigDecimal fee, Customer sender, Customer recipient) {
+        this.transferAmount = transferAmount;
+        this.total = total;
+        this.fee = fee;
+        this.sender = sender;
+        this.recipient = recipient;
+    }
 }
 

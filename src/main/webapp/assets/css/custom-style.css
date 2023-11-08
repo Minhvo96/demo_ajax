@@ -42,3 +42,15 @@ footer.error {
 .notification p.error {
     color: #b05965;
 }
+
+form label{
+    font-weight: bold;
+}
+
+label.error {
+    color: red;
+}
+
+input.error {
+    border: solid 1px red;
+}

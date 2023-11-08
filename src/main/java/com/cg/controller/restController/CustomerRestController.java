@@ -2,11 +2,13 @@ package com.cg.controller.restController;
 
 import com.cg.model.Customer;
 import com.cg.model.Deposit;
+import com.cg.model.History;
 import com.cg.model.Withdraw;
 import com.cg.model.dto.request.DepositReqDTO;
 import com.cg.model.dto.request.TransferReqDTO;
 import com.cg.model.dto.request.WithdrawReqDTO;
 import com.cg.model.dto.response.CustomerResDTO;
+import com.cg.model.dto.response.HistoryResDTO;
 import com.cg.model.dto.response.TransferResDTO;
 import com.cg.service.customer.ICustomerService;
 import lombok.AllArgsConstructor;
@@ -33,14 +35,14 @@ public class CustomerRestController {
     }
 
     @PostMapping
-    public ResponseEntity<CustomerResDTO> create(@RequestBody Customer customer) {
+    public ResponseEntity<?> create(@RequestBody Customer customer) {
         Customer newCustomer = customerService.createCustomer(customer);
         CustomerResDTO newCustomerResDTO = newCustomer.toCustomerResDTO();
         return new ResponseEntity<>(newCustomerResDTO, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerResDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<?> getById(@PathVariable Long id) {
         Optional<Customer> customerOptional = customerService.findById(id);
 
         Customer customer = customerOptional.get();
@@ -79,6 +81,22 @@ public class CustomerRestController {
         return new ResponseEntity<>(updateCustomer.get().toCustomerResDTO(), HttpStatus.OK);
     }
 
+//    @PostMapping("/deposit")
+//    public ResponseEntity<?> deposit(@RequestBody Deposit deposit) {
+//
+//        Optional<Customer> customer = customerService.findById(deposit.getCustomer().getId());
+//        BigDecimal transactionAmount = deposit.getTransactionAmount();
+//
+//        deposit.setCustomer(customer.get());
+//        deposit.setTransactionAmount(transactionAmount);
+//
+//        customerService.deposit(deposit);
+//        Optional<Customer> updateCustomer = customerService.findById(deposit.getCustomer().getId());
+//
+//        return new ResponseEntity<>(updateCustomer.get(), HttpStatus.OK);
+//    }
+
+
     @PostMapping("/withdraw")
     public ResponseEntity<?> withdraw(@RequestBody WithdrawReqDTO withdrawReqDTO) {
         Optional<Customer> customer = customerService.findById(Long.valueOf(withdrawReqDTO.getCustomerId()));
@@ -109,5 +127,11 @@ public class CustomerRestController {
         transferResDTO.setRecipient(recipient);
 
         return new ResponseEntity<>(transferResDTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/histories")
+    public ResponseEntity<?> getAllHistories() {
+        List<HistoryResDTO> histories = customerService.findAllHistory();
+        return new ResponseEntity<>(histories, HttpStatus.OK);
     }
 }
