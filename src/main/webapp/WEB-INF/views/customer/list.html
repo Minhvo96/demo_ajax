@@ -13,6 +13,10 @@
         <nav class="navbar bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">List of customers</a>
+                <div>
+                    <input type="text" id="searchInput" placeholder="Search by name or email">
+                    <button class="btn btn-outline-light" type="button" id="searchButton">Search</button>
+                </div>
                 <div class="d-flex" style="gap: 10px;">
                     <button class="btn btn-outline-light" type="button" id="btnShowHistory">
                         <i class="fas fa-history"></i>
@@ -34,8 +38,11 @@
                 <th>FullName</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Address</th>
                 <th>Balance</th>
+                <th>Province</th>
+                <th>District</th>
+                <th>Ward</th>
+                <th>Address</th>
                 <th colspan="5" class="text-center">Action</th>
             </tr>
             </thead>
@@ -43,6 +50,8 @@
             <!-- Dữ liệu khách hàng sẽ được thêm vào đây bằng JavaScript -->
             </tbody>
         </table>
+        <ul class="pagination">
+        </ul>
     </div>
 </div>
 

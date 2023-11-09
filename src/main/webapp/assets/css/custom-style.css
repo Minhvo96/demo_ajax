@@ -54,3 +54,16 @@ label.error {
 input.error {
     border: solid 1px red;
 }
+
+.hide {
+    display: none;
+}
+
+.show {
+    display: block !important;
+}
+
+.error-area {
+    font-weight: bold;
+    color: red;
+}

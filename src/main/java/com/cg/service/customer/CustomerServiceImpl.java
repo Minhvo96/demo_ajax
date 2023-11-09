@@ -29,6 +29,8 @@ public class CustomerServiceImpl implements ICustomerService {
 
     private final IHistoryRepository historyRepository;
 
+    private final ILocationRegionRepository locationRegionRepository;
+
     @Override
     public List<CustomerResDTO> findAllCustomerResDTO() {
         return customerRepository.findAllCustomerResDTO();
@@ -48,6 +50,10 @@ public class CustomerServiceImpl implements ICustomerService {
     }
     @Override
     public Customer createCustomer (Customer customer) {
+        LocationRegion locationRegion = customer.getLocationRegion();
+        locationRegionRepository.save(locationRegion);
+
+        customer.setLocationRegion(locationRegion);
         customer.setBalance(BigDecimal.ZERO);
         customerRepository.save(customer);
 
@@ -66,6 +72,7 @@ public class CustomerServiceImpl implements ICustomerService {
         Customer oldCustomer = findById(customer.getId()).get();
         customer.setBalance(oldCustomer.getBalance());
         customer.setDeleted(oldCustomer.getDeleted());
+        locationRegionRepository.save(customer.getLocationRegion());
         customerRepository.save(customer);
 
         return customer;
@@ -77,9 +84,6 @@ public class CustomerServiceImpl implements ICustomerService {
     }
     @Override
     public void deposit(Deposit deposit) {
-//        if (deposit.getTransactionAmount().compareTo(BigDecimal.valueOf(10000000000L)) < 0) {
-//            throw new DataInputException("Số tiền chuyển khoản tối đa là $1.000.000");
-//        }
 
         depositRepository.save(deposit);
 
